@@ -6,10 +6,12 @@ Simple command-line tool to show weather for my location. Borrowed HEAVILY from 
 
 ### Python Environment
 
+Create a python virtual environment, activate it, and install dependancies.
+
 ``` sh
-venvpath="./.venv"
-python -m venv $venvpath
-source $venvpath/bin/activate
+python -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
 
