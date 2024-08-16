@@ -33,8 +33,23 @@ def get_weather():
 
     return WeatherData(res["name"], weather["id"], weather["main"], weather["description"])
 
-weather = get_weather()
-print(f'The current conditions in {weather.city} are {weather.condition}')
+def select_ascii(condition_id, wind_speed):
+    category, subcategory = condition_id // 100, condition_id % 100
+
+    match category, subcategory:
+        case 8,(2|3): art = partial_clouds; color = 'blue'
+        case _,_: art = "?"; color = 'white'
+
+    return art, color
+
+def main():
+
+    weather = get_weather()
+    icon, color = select_ascii(weather.condition_id, 10)
+
+    cprint(NEWLINE.join(icon), color)
+
+main()
 quit()
 cprint(NEWLINE.join(sunny), 'yellow')
 cprint(NEWLINE.join(clouds), 'white')
