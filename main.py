@@ -1,59 +1,34 @@
-import requests
-from ascii_art import * 
-from termcolor import cprint, colored
-from config import config
-from dataclasses import dataclass
+from weather import get_weather
+from glyphs import *
+from datetime import datetime
 
 NEWLINE = '\n'
 
-def current_location():
-    # Gets the user's current location from ipinfo.io 
-    
-    loc_api = "https://ipinfo.io/loc"
-    loc_req = requests.get(loc_api).text
-    lat, long = (float(item) for item in loc_req.split(','))
-    return lat, long
+def is_nighttime():
+	hour = datetime.now().hour
+	# naive approach - day-time defined as 6:00 AM -> 8:00 PM
+	nighttime = not (6 <= hour <= 20)
+	return nighttime
 
-def call_weather_api():
-    api_key = config["API_KEY"]
-    lat, lon = current_location()
-    weather_api = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&units=imperial&lon={lon}&appid={api_key}"
-    weather_request = requests.get(weather_api).json()
-    return weather_request  
-
-def get_weather():    
-    res = call_weather_api()
-    weather = res["weather"][0]
-    @dataclass
-    class WeatherData:
-        city: str
-        condition_id: int
-        condition: str
-        description: str
-
-    return WeatherData(res["name"], weather["id"], weather["main"], weather["description"])
-
-def select_ascii(condition_id, wind_speed):
+def select_glyph(condition_id, wind_speed):
     category, subcategory = condition_id // 100, condition_id % 100
+    nighttime = is_nighttime()
+    
+    match category, subcategory, nighttime:
+        case 8,(2|3): glyph = partial_clouds.fullcolor()
+        case 8, 0, True: glyph = night.fullcolor()
+        case 2,_,_: glyph = thunderstorm.fullcolor()
+        case 5,_,_: glyph = rain.fullcolor()
+        case _,_,_: glyph = "?"
 
-    match category, subcategory:
-        case 8,(2|3): art = partial_clouds; color = 'blue'
-        case _,_: art = "?"; color = 'white'
-
-    return art, color
+    return glyph
 
 def main():
 
     weather = get_weather()
-    icon, color = select_ascii(weather.condition_id, 10)
+    print(weather)
+    glyph = select_glyph(weather.condition_id, 10)
 
-    cprint(NEWLINE.join(icon), color)
+    print(NEWLINE.join(glyph))
 
 main()
-quit()
-cprint(NEWLINE.join(sunny), 'yellow')
-cprint(NEWLINE.join(clouds), 'white')
-cprint(NEWLINE.join(rain), 'blue')
-cprint(NEWLINE.join(drizzle), 'cyan')
-cprint(NEWLINE.join(snow), 'white')
-cprint(NEWLINE.join(fog), 'grey')
