@@ -14,13 +14,18 @@ def is_nighttime():
 def select_glyph(condition_id, wind_speed):
     category, subcategory = condition_id // 100, condition_id % 100
     nighttime = is_nighttime()
+
     
     match category, subcategory, nighttime:
-        case 8,(2|3): glyph = partial_clouds.fullcolor()
         case 8, 0, True: glyph = night.fullcolor()
         case 2,_,_: glyph = thunderstorm.fullcolor()
         case 5,_,_: glyph = rain.fullcolor()
+        case 8,(1|2|3),_: glyph = partial_clouds.fullcolor()
+        case 8,4,_,_: glyph = clouds.fullcolor()
         case _,_,_: glyph = "?"
+    
+    if glyph == "?":
+        print(f'DEBUG: category: {category}, subcategory: {subcategory}, nighttime: {nighttime}')
 
     return glyph
 
@@ -39,7 +44,10 @@ def main():
     for row in zip(glyph, weather_text):
         combined = PADDING.join(row)
         print(combined)
-
+    
+    if glyph == "?":
+        print("DEBUG: ", end="")
+        print(weather)
     # print(NEWLINE.join(glyph))
 
 main()
