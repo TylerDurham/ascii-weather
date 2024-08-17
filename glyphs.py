@@ -81,8 +81,6 @@ clouds = Glyph(
     ]
 )
 
-
-
 drizzle = Glyph(
     [
         " '  '    '",
@@ -113,7 +111,7 @@ rain = Glyph(
 night = Glyph(
     [
         "   .   *  ",
-        " *    . 🌕 ",
+        " *    . O ",
         " . . *  . "
     ],
     [

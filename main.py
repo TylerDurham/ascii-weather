@@ -2,6 +2,7 @@ from weather import get_weather
 from glyphs import *
 from datetime import datetime
 
+PADDING = " " * 2
 NEWLINE = '\n'
 
 def is_nighttime():
@@ -26,9 +27,19 @@ def select_glyph(condition_id, wind_speed):
 def main():
 
     weather = get_weather()
-    print(weather)
     glyph = select_glyph(weather.condition_id, 10)
+    time = datetime.today().strftime("%I:%M %p")
 
-    print(NEWLINE.join(glyph))
+    weather_text = [
+		'{:<13} feels like {}'.format(weather.temp, weather.feels_like),
+		'{:<13} wind {}'.format(weather.condition, weather.wind_speed),
+        '{:<13} thanks to https://openweathermap.org'.format(time)
+	]
+
+    for row in zip(glyph, weather_text):
+        combined = PADDING.join(row)
+        print(combined)
+
+    # print(NEWLINE.join(glyph))
 
 main()
