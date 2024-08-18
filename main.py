@@ -1,9 +1,20 @@
 from weather import get_weather
 from glyphs import *
 from datetime import datetime
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog="ascii-weather",
+    description="Gets the local weather."
+)
+
+parser.add_argument("-d", "--debug", action="store_true", help="Output debug information.")
+
+args = parser.parse_args()
 
 PADDING = " " * 2
 NEWLINE = '\n'
+DEBUG_MSGS = []
 
 def is_nighttime():
 	hour = datetime.now().hour
@@ -15,7 +26,6 @@ def select_glyph(condition_id, wind_speed):
     category, subcategory = condition_id // 100, condition_id % 100
     nighttime = is_nighttime()
 
-    
     match category, subcategory, nighttime:
         case 8, 0, True: glyph = night.fullcolor()
         case 2,_,_: glyph = thunderstorm.fullcolor()
@@ -24,8 +34,7 @@ def select_glyph(condition_id, wind_speed):
         case 8,4,_,_: glyph = clouds.fullcolor()
         case _,_,_: glyph = "?"
     
-    if glyph == "?":
-        print(f'DEBUG: category: {category}, subcategory: {subcategory}, nighttime: {nighttime}')
+    DEBUG_MSGS.append(f'DEBUG: category: {category}, subcategory: {subcategory}, nighttime: {nighttime}')
 
     return glyph
 
@@ -40,14 +49,18 @@ def main():
 		'{:<13} wind {}'.format(weather.condition, weather.wind_speed),
         '{:<13} thanks to https://openweathermap.org'.format(time)
 	]
+    
+    print(f'The current conditions in {weather.city} are:')
 
     for row in zip(glyph, weather_text):
         combined = PADDING.join(row)
         print(combined)
     
-    if glyph == "?":
-        print("DEBUG: ", end="")
-        print(weather)
+    DEBUG_MSGS.append("DEBUG: ")
+    DEBUG_MSGS.append(weather)
     # print(NEWLINE.join(glyph))
 
+    if args.debug:
+        for msg in DEBUG_MSGS:
+            print(msg)
 main()
