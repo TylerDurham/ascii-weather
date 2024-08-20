@@ -19,7 +19,7 @@ DEBUG_MSGS = []
 def is_nighttime():
 	hour = datetime.now().hour
 	# naive approach - day-time defined as 6:00 AM -> 8:00 PM
-	nighttime = not (6 <= hour <= 20)
+	nighttime = not (6 <= hour <= 19)
 	return nighttime
 
 def select_glyph(condition_id, wind_speed):
@@ -28,10 +28,11 @@ def select_glyph(condition_id, wind_speed):
 
     match category, subcategory, nighttime:
         case 8, 0, True: glyph = night.fullcolor()
+        case 8,(1|2|3),True: glyph = partial_clouds_night.fullcolor()
         case 2,_,_: glyph = thunderstorm.fullcolor()
         case 5,_,_: glyph = rain.fullcolor()
         case 8,(1|2|3),_: glyph = partial_clouds.fullcolor()
-        case 8,4,_,_: glyph = clouds.fullcolor()
+        case 8,4,_: glyph = clouds.fullcolor()
         case _,_,_: glyph = "?"
     
     DEBUG_MSGS.append(f'DEBUG: category: {category}, subcategory: {subcategory}, nighttime: {nighttime}')
@@ -50,7 +51,7 @@ def main():
         '{:<13} thanks to https://openweathermap.org'.format(time)
 	]
     
-    print(f'The current conditions in {weather.city} are:')
+    print(f'The current conditions at {time} in {weather.city} are:')
 
     for row in zip(glyph, weather_text):
         combined = PADDING.join(row)

@@ -68,6 +68,19 @@ partial_clouds = Glyph(
 )
 
 
+partial_clouds_night = Glyph(
+    [
+        " .   (  ) ",
+        ". * (    )",
+        " . (   )  ",
+    ],
+    [
+        " F   C  C ",
+        "F B C    C",
+        " F C   C  "
+    ]
+)
+
 clouds = Glyph(
     [
         "  ( )()_  ",
@@ -106,7 +119,6 @@ rain = Glyph(
         " C C EC C "
     ]
 )
-
 
 night = Glyph(
     [
